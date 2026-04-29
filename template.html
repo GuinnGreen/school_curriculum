@@ -1,0 +1,1020 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>億載國小 114-1 課表</title>
+<style>
+  :root {
+    --bg: #EDE6DA;
+    --surface: #F8F2E7;
+    --surface-2: #FBF7EE;
+    --ink: #5C5448;
+    --ink-soft: #8C8174;
+    --line: #DCD2BF;
+    --accent: #B5C4B1;
+    --accent-2: #D4A5A5;
+    --accent-3: #A8B5C8;
+    --accent-4: #D7C3A1;
+    --shadow: 0 6px 16px rgba(92, 84, 72, 0.08);
+    --shadow-hover: 0 10px 24px rgba(92, 84, 72, 0.12);
+    --radius: 18px;
+    --radius-sm: 12px;
+    --radius-pill: 999px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang TC",
+      "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+    min-height: 100vh;
+  }
+  header {
+    padding: 24px clamp(16px, 4vw, 40px) 18px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+  }
+  header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  header h1 .badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .search {
+    flex: 1;
+    min-width: 240px;
+    position: relative;
+  }
+  .search input {
+    width: 100%;
+    padding: 12px 18px 12px 42px;
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius-pill);
+    background: var(--surface-2);
+    color: var(--ink);
+    font: inherit;
+    outline: none;
+    transition: border-color 0.18s, box-shadow 0.18s;
+  }
+  .search input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(181, 196, 177, 0.25);
+  }
+  .search::before {
+    content: "🔍";
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    opacity: 0.6;
+  }
+  main {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 20px;
+    padding: 0 clamp(16px, 4vw, 40px) 40px;
+  }
+  aside {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+    height: calc(100vh - 130px);
+    position: sticky;
+    top: 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .tab {
+    flex: 1;
+    padding: 10px 10px;
+    border: none;
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--ink-soft);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+    white-space: nowrap;
+  }
+  .tab:hover { background: var(--surface-2); }
+  .tab.active {
+    background: var(--accent);
+    color: #fff;
+  }
+  .tab-badge {
+    display: inline-block;
+    margin-left: 4px;
+    padding: 0 6px;
+    border-radius: var(--radius-pill);
+    background: var(--accent-2);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.5;
+    vertical-align: middle;
+  }
+  .tab.active .tab-badge { background: rgba(255,255,255,0.4); }
+  .list-item .check {
+    width: 18px;
+    height: 18px;
+    border-radius: 6px;
+    border: 1.5px solid var(--line);
+    background: var(--surface-2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: transparent;
+    flex-shrink: 0;
+  }
+  .list-item.checked .check {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .list-item.checked {
+    background: rgba(181, 196, 177, 0.18);
+    border-color: var(--accent);
+  }
+  .compare-summary {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+    padding: 14px 16px;
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+  }
+  .compare-summary .count {
+    font-weight: 700;
+    color: var(--ink);
+    margin-right: 4px;
+  }
+  .compare-summary .picks {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .compare-summary .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 18px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow);
+    min-width: 84px;
+  }
+  .compare-summary .stat .num {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .compare-summary .stat .label {
+    font-size: 11px;
+    opacity: 0.9;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .chip .x {
+    cursor: pointer;
+    opacity: 0.75;
+    font-weight: 700;
+    transition: opacity 0.15s;
+  }
+  .chip .x:hover { opacity: 1; }
+  .compare-empty {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--ink-soft);
+  }
+  .schedule td.cell.free {
+    background: rgba(181, 196, 177, 0.55) !important;
+    border: 1.5px dashed rgba(92, 84, 72, 0.25);
+  }
+  .schedule td.cell.free .free-mark {
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 15px;
+  }
+  .schedule td.cell.busy {
+    text-align: left;
+    padding: 8px 10px;
+    font-size: 11px;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+  .schedule td.cell.busy .who {
+    display: block;
+    font-weight: 600;
+  }
+  .schedule td.cell.busy .what {
+    color: var(--ink-soft);
+    font-size: 10.5px;
+  }
+  .compare-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+  }
+  .btn {
+    padding: 6px 14px;
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn:hover { background: var(--surface-2); }
+  .btn.danger { color: var(--accent-2); }
+  .list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 4px 4px 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .list::-webkit-scrollbar { width: 8px; }
+  .list::-webkit-scrollbar-thumb {
+    background: var(--line);
+    border-radius: var(--radius-pill);
+  }
+  .list-item {
+    padding: 11px 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--ink);
+    transition: background 0.15s, transform 0.15s;
+    border: 1.5px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 15px;
+  }
+  .list-item:hover {
+    background: var(--surface-2);
+    transform: translateY(-1px);
+  }
+  .list-item.active {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: var(--shadow);
+  }
+  .list-item .meta {
+    font-size: 12px;
+    opacity: 0.7;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .list-item.active .meta { opacity: 0.95; }
+  .meta .meta-class,
+  .meta .meta-homeroom {
+    background: rgba(168, 181, 200, 0.25);
+    color: var(--ink);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+  }
+  .list-item.active .meta .meta-class,
+  .list-item.active .meta .meta-homeroom {
+    background: rgba(255,255,255,0.35);
+    color: #fff;
+  }
+  .meta .meta-hours { opacity: 0.85; }
+  .empty-list {
+    padding: 24px;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+  .list-group-header {
+    position: sticky;
+    top: -4px;
+    margin: 6px 0 2px;
+    padding: 10px 14px;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .list-group-header:hover { background: var(--surface-2); }
+  .list-group-header:first-child { margin-top: 0; }
+  .list-group-header .grp-arrow {
+    color: var(--ink-soft);
+    font-size: 10px;
+    transition: transform 0.18s;
+    width: 10px;
+  }
+  .list-group-header.expanded .grp-arrow {
+    transform: rotate(90deg);
+  }
+  .list-group-body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .list-group-body.expanded {
+    grid-template-rows: 1fr;
+  }
+  .list-group-body > .body-inner {
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .list-group-body.expanded > .body-inner {
+    padding: 4px 0 6px;
+  }
+  .list-group-header .grp-name { flex: 1; }
+  .list-group-header .grp-count {
+    font-weight: 500;
+    color: var(--ink-soft);
+    font-size: 12px;
+  }
+  .list-group-header .grp-checked {
+    background: var(--accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 1px 8px;
+    border-radius: var(--radius-pill);
+  }
+
+  section.viewer {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+  }
+  .viewer-header {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .viewer-header .title {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0;
+  }
+  .viewer-header .subtitle {
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+
+  table.schedule {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 6px;
+    table-layout: fixed;
+  }
+  .schedule th, .schedule td {
+    padding: 10px 8px;
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
+    text-align: center;
+    vertical-align: middle;
+    font-size: 14px;
+  }
+  .schedule th {
+    background: var(--accent-4);
+    color: #fff;
+    font-weight: 600;
+  }
+  .schedule td.period {
+    background: var(--accent-3);
+    color: #fff;
+    font-weight: 600;
+    width: 88px;
+    padding: 12px 6px;
+    line-height: 1.4;
+  }
+  .schedule td.period .time {
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    margin-top: 4px;
+    opacity: 0.9;
+    white-space: nowrap;
+  }
+  .schedule td.cell {
+    height: 80px;
+    border: 1.5px solid transparent;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .schedule td.cell.empty {
+    background: transparent;
+  }
+  .schedule td.cell.has-content:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+  }
+  .schedule .subject {
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 4px;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+  .schedule .subject .cat {
+    display: block;
+    font-weight: 500;
+    font-size: 11px;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
+  .schedule .partner {
+    font-size: 13px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    border-radius: var(--radius-pill);
+    padding: 2px 10px;
+    display: inline-block;
+    background: rgba(255,255,255,0.6);
+    transition: background 0.15s, color 0.15s;
+  }
+  .schedule .partner:hover {
+    background: var(--accent-2);
+    color: #fff;
+  }
+
+  /* Subject color tints (Morandi) */
+  .sub-0 { background: #E8DED1 !important; }
+  .sub-1 { background: #DDE4D7 !important; }
+  .sub-2 { background: #E5D9D6 !important; }
+  .sub-3 { background: #D6DDE5 !important; }
+  .sub-4 { background: #E4DCC9 !important; }
+  .sub-5 { background: #D9D4E0 !important; }
+  .sub-6 { background: #E1D7C2 !important; }
+  .sub-7 { background: #CFD9D8 !important; }
+
+  footer {
+    text-align: center;
+    padding: 12px 20px 24px;
+    color: var(--ink-soft);
+    font-size: 12px;
+  }
+
+  @media (max-width: 800px) {
+    main {
+      grid-template-columns: 1fr;
+    }
+    aside {
+      position: static;
+      height: auto;
+      max-height: 320px;
+    }
+    .schedule td.cell { height: 64px; padding: 8px 6px; }
+    .schedule .subject { font-size: 14px; }
+    .schedule .partner { font-size: 12px; padding: 1px 8px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>億載國小 <span class="badge">114-1 課表</span></h1>
+  <div class="search">
+    <input id="search" type="search" placeholder="搜尋老師或班級…" autocomplete="off">
+  </div>
+</header>
+<main>
+  <aside>
+    <div class="tabs">
+      <button class="tab active" data-mode="teacher">老師</button>
+      <button class="tab" data-mode="class">班級</button>
+      <button class="tab" data-mode="compare">空堂<span class="tab-badge" id="compareBadge" hidden>0</span></button>
+    </div>
+    <div class="list" id="list"></div>
+  </aside>
+  <section class="viewer" id="viewer"></section>
+</main>
+<footer>資料來源：114學年度第一學期班級課表 / 教師課表</footer>
+
+<script>
+const DATA = __DATA__;
+
+const state = {
+  mode: "teacher",
+  selectedTeacherId: "",
+  selectedClassId: "",
+  compareIds: new Set(),
+  expandedGroup: null, // accordion: only one group open at a time
+  query: "",
+};
+
+// Subject color: stable hash → 0..7
+function subjectClass(s) {
+  if (!s) return "";
+  let h = 0;
+  for (const c of s) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return "sub-" + (h % 8);
+}
+
+function matches(item) {
+  const q = state.query.trim().toLowerCase();
+  if (!q) return true;
+  return (
+    (item.name || "").toLowerCase().includes(q) ||
+    (item.id || "").toLowerCase().includes(q)
+  );
+}
+
+const TEACHER_GRADE_ORDER = [
+  "一年級導師", "二年級導師", "三年級導師", "四年級導師", "五年級導師", "六年級導師",
+];
+const SUBJECT_KEYAKI_ORDER = [
+  "國語", "數學", "英語", "本土語", "自然", "社會", "綜合",
+  "健康", "體育", "健體", "音樂", "美勞", "表藝", "藝文",
+  "校訂議題", "閱讀", "作文", "社團", "電腦", "彈性",
+];
+const CLASS_GRADE_ORDER = ["一年級", "二年級", "三年級", "四年級", "五年級", "六年級"];
+
+function teacherGroupRank(name) {
+  const idx = TEACHER_GRADE_ORDER.indexOf(name);
+  if (idx >= 0) return idx;
+  for (let i = 0; i < SUBJECT_KEYAKI_ORDER.length; i++) {
+    if (name.startsWith(SUBJECT_KEYAKI_ORDER[i])) return 100 + i;
+  }
+  return 999;
+}
+function classGroupRank(name) {
+  return CLASS_GRADE_ORDER.indexOf(name);
+}
+
+function renderList() {
+  const list = document.getElementById("list");
+  const items = state.mode === "class" ? DATA.classes : DATA.teachers;
+  const filtered = items.filter(matches);
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="empty-list">沒有符合的結果</div>';
+    return;
+  }
+  const groupKey = state.mode === "class" ? "grade" : "category";
+  const rankFn = state.mode === "class" ? classGroupRank : teacherGroupRank;
+  const buckets = new Map();
+  for (const it of filtered) {
+    const k = it[groupKey] || "其他";
+    if (!buckets.has(k)) buckets.set(k, []);
+    buckets.get(k).push(it);
+  }
+  const sortedGroups = [...buckets.entries()].sort(
+    (a, b) => rankFn(a[0]) - rankFn(b[0]),
+  );
+
+  const teacherMeta = (t) => {
+    const homeroomTag =
+      t.homeroom && findClass(t.homeroom)
+        ? `<span class="meta-class">${findClass(t.homeroom).name}</span>`
+        : "";
+    return `<span class="meta">${homeroomTag}<span class="meta-hours">${t.hours || 0} 節</span></span>`;
+  };
+  const classMeta = (c) =>
+    c.homeroom_teacher
+      ? `<span class="meta"><span class="meta-homeroom">導師：${c.homeroom_teacher}</span></span>`
+      : "";
+
+  const renderItem = (it) => {
+    if (state.mode === "compare") {
+      const checked = state.compareIds.has(it.id) ? " checked" : "";
+      return `<div class="list-item${checked}" data-id="${it.id}">
+        <span class="check">✓</span>
+        <span style="flex:1">${it.name}</span>
+        ${teacherMeta(it)}
+      </div>`;
+    }
+    const selectedId =
+      state.mode === "teacher" ? state.selectedTeacherId : state.selectedClassId;
+    const active = it.id === selectedId ? " active" : "";
+    const meta = state.mode === "class" ? classMeta(it) : teacherMeta(it);
+    return `<div class="list-item${active}" data-id="${it.id}">
+      <span>${it.name}</span>${meta}
+    </div>`;
+  };
+
+  const hasSearch = state.query.trim() !== "";
+
+  list.innerHTML = sortedGroups
+    .map(([groupName, items]) => {
+      const checkedHere =
+        state.mode === "compare"
+          ? items.filter((it) => state.compareIds.has(it.id)).length
+          : 0;
+      // Compare mode: expand any group that has checked items.
+      // Teacher/class mode: accordion — only `state.expandedGroup` is open.
+      // Search overrides both: expand any group with matches.
+      const expanded =
+        hasSearch ||
+        (state.mode === "compare"
+          ? checkedHere > 0 || state.expandedGroup === groupName
+          : state.expandedGroup === groupName);
+      const arrow = `<span class="grp-arrow">▶</span>`;
+      const tag =
+        checkedHere > 0
+          ? `<span class="grp-checked">${checkedHere}</span>`
+          : `<span class="grp-count">${items.length}</span>`;
+      const header = `<div class="list-group-header${expanded ? " expanded" : ""}" data-group="${escapeAttr(groupName)}">${arrow}<span class="grp-name">${groupName}</span>${tag}</div>`;
+      const body = `<div class="list-group-body${expanded ? " expanded" : ""}"><div class="body-inner">${items.map(renderItem).join("")}</div></div>`;
+      return header + body;
+    })
+    .join("");
+}
+
+function findTeacherByName(name) {
+  return DATA.teachers.find((t) => t.name === name);
+}
+function findTeacher(id) {
+  return DATA.teachers.find((t) => t.id === id);
+}
+function findClass(id) {
+  return DATA.classes.find((c) => c.id === id);
+}
+
+function renderViewer() {
+  const viewer = document.getElementById("viewer");
+  if (state.mode === "compare") {
+    viewer.innerHTML = renderCompareViewer();
+    return;
+  }
+  if (state.mode === "teacher") {
+    const t = findTeacher(state.selectedTeacherId);
+    if (!t) {
+      viewer.innerHTML = `
+        <div class="viewer-header"><h2 class="title">老師課表</h2></div>
+        <div class="compare-empty">從左側展開分組，選一位老師看他的一週課表</div>`;
+      return;
+    }
+    viewer.innerHTML = renderTable({
+      title: `${t.name} 老師`,
+      subtitle: `編號 ${t.id}　每週 ${t.hours} 節`,
+      schedule: t.schedule,
+      partnerKey: "class",
+      partnerLabel: (cid) => {
+        const cls = findClass(cid);
+        return cls ? cls.name : cid;
+      },
+    });
+  } else {
+    const c = findClass(state.selectedClassId);
+    if (!c) {
+      viewer.innerHTML = `
+        <div class="viewer-header"><h2 class="title">班級課表</h2></div>
+        <div class="compare-empty">從左側展開年級，選一個班看他們的一週課表</div>`;
+      return;
+    }
+    viewer.innerHTML = renderTable({
+      title: c.name,
+      subtitle: "班級課表",
+      schedule: c.schedule,
+      partnerKey: "teacher",
+      partnerLabel: (name) => name,
+    });
+  }
+}
+
+function renderTable({ title, subtitle, schedule, partnerKey, partnerLabel }) {
+  const days = DATA.days;
+  const rows = DATA.periods
+    .map((p) => {
+      const cells = days
+        .map((d) => {
+          const slot = (schedule[d] || {})[p.n];
+          if (!slot) return `<td class="cell empty"></td>`;
+          const primary = (slot.tokens && slot.tokens[0]) || slot.subject;
+          const cls = subjectClass(primary);
+          const partner = slot[partnerKey] || "";
+          const subjectHtml = (slot.tokens && slot.tokens.length > 1)
+            ? `<div class="subject">${slot.tokens[0]}<span class="cat">${slot.tokens.slice(1).join(" · ")}</span></div>`
+            : `<div class="subject">${slot.subject}</div>`;
+          const partnerHtml = partner
+            ? `<span class="partner" data-partner="${escapeAttr(partner)}">${partnerLabel(partner)}</span>`
+            : "";
+          return `<td class="cell has-content ${cls}">${subjectHtml}${partnerHtml}</td>`;
+        })
+        .join("");
+      return `<tr>
+        <td class="period">第${p.n}節${p.time ? `<span class="time">${p.time}</span>` : ""}</td>
+        ${cells}
+      </tr>`;
+    })
+    .join("");
+
+  return `
+    <div class="viewer-header">
+      <h2 class="title">${title}</h2>
+      <span class="subtitle">${subtitle}</span>
+    </div>
+    <table class="schedule">
+      <thead>
+        <tr>
+          <th style="width:88px;">節次</th>
+          ${days.map((d) => `<th>星期${d}</th>`).join("")}
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function escapeAttr(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+}
+
+function renderCompareViewer() {
+  const selected = [...state.compareIds].map(findTeacher).filter(Boolean);
+  if (selected.length === 0) {
+    return `
+      <div class="viewer-header">
+        <h2 class="title">空堂查詢</h2>
+        <span class="subtitle">勾選想要一起討論事情的老師</span>
+      </div>
+      <div class="compare-empty">
+        從左側勾選 2 位以上老師，這裡會列出大家都沒課的時段
+      </div>`;
+  }
+
+  const days = DATA.days;
+  let freeCount = 0;
+  const rows = DATA.periods
+    .map((p) => {
+      const cells = days
+        .map((d) => {
+          const busy = selected
+            .map((t) => {
+              const slot = (t.schedule[d] || {})[p.n];
+              return slot ? { teacher: t, slot } : null;
+            })
+            .filter(Boolean);
+          if (busy.length === 0) {
+            freeCount += 1;
+            return `<td class="cell free"><span class="free-mark">✓ 全員空堂</span></td>`;
+          }
+          const lines = busy
+            .map(({ teacher, slot }) => {
+              const cls = findClass(slot.class);
+              const where = cls ? cls.name : slot.class;
+              return `<div><span class="who">${teacher.name}</span> <span class="what">${slot.subject} · ${where}</span></div>`;
+            })
+            .join("");
+          return `<td class="cell busy">${lines}</td>`;
+        })
+        .join("");
+      return `<tr>
+        <td class="period">第${p.n}節${p.time ? `<span class="time">${p.time}</span>` : ""}</td>
+        ${cells}
+      </tr>`;
+    })
+    .join("");
+
+  const chips = selected
+    .map(
+      (t) =>
+        `<span class="chip">${t.name}<span class="x" data-remove="${t.id}">×</span></span>`,
+    )
+    .join("");
+
+  return `
+    <div class="viewer-header">
+      <h2 class="title">空堂查詢</h2>
+      <span class="subtitle">${selected.length} 位老師 一起的空堂</span>
+    </div>
+    <div class="compare-summary">
+      <div class="picks">
+        <span class="count">已選：</span>
+        ${chips}
+        <button class="btn danger" id="clearCompare">清除全部</button>
+      </div>
+      <div class="stat">
+        <span class="num">${freeCount}</span>
+        <span class="label">個共同空堂</span>
+      </div>
+    </div>
+    <table class="schedule">
+      <thead>
+        <tr>
+          <th style="width:88px;">節次</th>
+          ${days.map((d) => `<th>星期${d}</th>`).join("")}
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function onPartnerClick(partner) {
+  if (state.mode === "teacher") {
+    const cls = findClass(partner);
+    if (cls) {
+      state.mode = "class";
+      state.selectedClassId = partner;
+      state.expandedGroup = cls.grade;
+      updateHash();
+      renderAll();
+    }
+  } else {
+    const t = findTeacherByName(partner);
+    if (t) {
+      state.mode = "teacher";
+      state.selectedTeacherId = t.id;
+      state.expandedGroup = t.category;
+      updateHash();
+      renderAll();
+    }
+  }
+}
+
+function renderAll() {
+  document.querySelectorAll(".tab").forEach((t) => {
+    t.classList.toggle("active", t.dataset.mode === state.mode);
+  });
+  const badge = document.getElementById("compareBadge");
+  if (state.compareIds.size > 0) {
+    badge.textContent = state.compareIds.size;
+    badge.hidden = false;
+  } else {
+    badge.hidden = true;
+  }
+  renderList();
+  renderViewer();
+  requestAnimationFrame(() => {
+    const active = document.querySelector(".list-item.active");
+    if (active) active.scrollIntoView({ block: "center", behavior: "smooth" });
+  });
+}
+
+function updateHash() {
+  if (state.mode === "compare") {
+    const ids = [...state.compareIds].join(",");
+    history.replaceState(null, "", ids ? `#compare/${ids}` : "#compare");
+    return;
+  }
+  const id =
+    state.mode === "teacher" ? state.selectedTeacherId : state.selectedClassId;
+  history.replaceState(null, "", `#${state.mode}/${encodeURIComponent(id)}`);
+}
+
+function readHash() {
+  const compareMatch = location.hash.match(/^#compare(?:\/(.+))?$/);
+  if (compareMatch) {
+    state.mode = "compare";
+    state.compareIds = new Set(
+      (compareMatch[1] || "").split(",").filter((id) => findTeacher(id)),
+    );
+    return;
+  }
+  const m = location.hash.match(/^#(teacher|class)\/(.+)$/);
+  if (!m) return;
+  const [, mode, raw] = m;
+  const id = decodeURIComponent(raw);
+  if (mode === "teacher" && findTeacher(id)) {
+    state.mode = "teacher";
+    state.selectedTeacherId = id;
+    state.expandedGroup = findTeacher(id).category;
+  } else if (mode === "class" && findClass(id)) {
+    state.mode = "class";
+    state.selectedClassId = id;
+    state.expandedGroup = findClass(id).grade;
+  }
+}
+
+// Wire up events
+document.querySelectorAll(".tab").forEach((tab) => {
+  tab.addEventListener("click", () => {
+    state.mode = tab.dataset.mode;
+    if (state.mode === "teacher") state.selectedTeacherId = "";
+    else if (state.mode === "class") state.selectedClassId = "";
+    state.expandedGroup = null;
+    updateHash();
+    renderAll();
+  });
+});
+function groupOf(item) {
+  if (!item) return null;
+  return state.mode === "class" ? item.grade : item.category;
+}
+
+document.getElementById("list").addEventListener("click", (e) => {
+  const header = e.target.closest(".list-group-header");
+  if (header) {
+    const name = header.dataset.group;
+    state.expandedGroup = state.expandedGroup === name ? null : name;
+    // Animate via class toggle on existing DOM (avoid full re-render).
+    document.querySelectorAll(".list-group-header").forEach((h) => {
+      const hasChecks = !!h.querySelector(".grp-checked");
+      const isOpen =
+        (state.mode === "compare" && hasChecks) ||
+        h.dataset.group === state.expandedGroup;
+      h.classList.toggle("expanded", isOpen);
+      const body = h.nextElementSibling;
+      if (body && body.classList.contains("list-group-body")) {
+        body.classList.toggle("expanded", isOpen);
+      }
+    });
+    return;
+  }
+  const item = e.target.closest(".list-item");
+  if (!item) return;
+  const id = item.dataset.id;
+  if (state.mode === "compare") {
+    if (state.compareIds.has(id)) state.compareIds.delete(id);
+    else state.compareIds.add(id);
+  } else if (state.mode === "teacher") {
+    state.selectedTeacherId = id;
+    state.expandedGroup = groupOf(findTeacher(id));
+  } else {
+    state.selectedClassId = id;
+    state.expandedGroup = groupOf(findClass(id));
+  }
+  updateHash();
+  renderAll();
+});
+document.getElementById("viewer").addEventListener("click", (e) => {
+  const removeEl = e.target.closest("[data-remove]");
+  if (removeEl) {
+    state.compareIds.delete(removeEl.dataset.remove);
+    renderAll();
+    return;
+  }
+  if (e.target.id === "clearCompare") {
+    state.compareIds.clear();
+    renderAll();
+    return;
+  }
+  const partnerEl = e.target.closest(".partner");
+  if (!partnerEl) return;
+  const partner = partnerEl.dataset.partner;
+  if (partner) onPartnerClick(partner);
+});
+document.getElementById("search").addEventListener("input", (e) => {
+  state.query = e.target.value;
+  renderList();
+});
+window.addEventListener("hashchange", () => {
+  readHash();
+  renderAll();
+});
+
+readHash();
+renderAll();
+</script>
+</body>
+</html>
