@@ -518,17 +518,120 @@
   }
 
   @media (max-width: 800px) {
+    header {
+      padding: 16px 12px 10px;
+      gap: 10px;
+    }
+    header h1 { font-size: 18px; }
     main {
       grid-template-columns: 1fr;
+      padding: 0 12px 24px;
+      gap: 12px;
     }
     aside {
       position: static;
       height: auto;
-      max-height: 320px;
+      max-height: 50vh;
+      padding: 12px;
     }
-    .schedule td.cell { height: 64px; padding: 8px 6px; }
-    .schedule .subject { font-size: 14px; }
-    .schedule .partner { font-size: 12px; padding: 1px 8px; }
+    section.viewer { padding: 16px; }
+    .viewer-header .title { font-size: 22px; }
+
+    /* Schedule: turn the table into a vertical list grouped per period.
+       Each period becomes a card; days inside the card stack as rows. */
+    .schedule { border-spacing: 0; }
+    .schedule thead { display: none; }
+    .schedule, .schedule tbody, .schedule tr {
+      display: block;
+      width: 100%;
+    }
+    .schedule tr {
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      padding: 12px 12px 8px;
+      margin-bottom: 12px;
+    }
+    .schedule td {
+      display: block;
+      width: 100% !important;
+      height: auto !important;
+      padding: 0;
+      background: transparent !important;
+      text-align: left;
+    }
+    .schedule td.period {
+      color: var(--accent-3);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      padding: 0;
+    }
+    .schedule td.period .time {
+      display: inline;
+      font-size: 12px;
+      font-weight: 400;
+      margin: 0 0 0 8px;
+      opacity: 0.85;
+    }
+    .schedule td.cell { display: none; }
+    .schedule td.cell.has-content,
+    .schedule td.cell.free,
+    .schedule td.cell.busy {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      margin-bottom: 6px;
+      min-height: 0;
+      font-size: 14px;
+    }
+    .schedule td.cell.has-content { background: var(--surface) !important; }
+    .schedule td.cell::before {
+      content: attr(data-day);
+      flex-shrink: 0;
+      width: 48px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-soft);
+    }
+    .schedule td.cell.has-content .subject {
+      flex: 1;
+      margin-bottom: 0;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .schedule td.cell.has-content .subject .cat {
+      display: inline;
+      margin: 0;
+      padding-left: 6px;
+      border-left: 1px solid var(--line);
+    }
+    .schedule td.cell.has-content .partner {
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+    .schedule td.cell.free .free-mark { font-size: 13px; }
+    .schedule td.cell.busy {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .schedule td.cell.busy::before { width: auto; }
+
+    /* Compare summary: stat block above chips on mobile */
+    .compare-summary { flex-direction: column; align-items: stretch; gap: 12px; }
+    .compare-summary .stat {
+      flex-direction: row;
+      gap: 10px;
+      padding: 10px 14px;
+      align-self: stretch;
+      justify-content: center;
+    }
+    .compare-summary .stat .num { font-size: 22px; }
+    .compare-summary .stat .label { margin-top: 0; }
   }
 </style>
 </head>
@@ -740,7 +843,7 @@ function renderTable({ title, subtitle, schedule, partnerKey, partnerLabel }) {
       const cells = days
         .map((d) => {
           const slot = (schedule[d] || {})[p.n];
-          if (!slot) return `<td class="cell empty"></td>`;
+          if (!slot) return `<td class="cell empty" data-day="星期${d}"></td>`;
           const primary = (slot.tokens && slot.tokens[0]) || slot.subject;
           const cls = subjectClass(primary);
           const partner = slot[partnerKey] || "";
@@ -750,7 +853,7 @@ function renderTable({ title, subtitle, schedule, partnerKey, partnerLabel }) {
           const partnerHtml = partner
             ? `<span class="partner" data-partner="${escapeAttr(partner)}">${partnerLabel(partner)}</span>`
             : "";
-          return `<td class="cell has-content ${cls}">${subjectHtml}${partnerHtml}</td>`;
+          return `<td class="cell has-content ${cls}" data-day="星期${d}">${subjectHtml}${partnerHtml}</td>`;
         })
         .join("");
       return `<tr>
@@ -807,7 +910,7 @@ function renderCompareViewer() {
             .filter(Boolean);
           if (busy.length === 0) {
             freeCount += 1;
-            return `<td class="cell free"><span class="free-mark">✓ 全員空堂</span></td>`;
+            return `<td class="cell free" data-day="星期${d}"><span class="free-mark">✓ 全員空堂</span></td>`;
           }
           const lines = busy
             .map(({ teacher, slot }) => {
@@ -816,7 +919,7 @@ function renderCompareViewer() {
               return `<div><span class="who">${teacher.name}</span> <span class="what">${slot.subject} · ${where}</span></div>`;
             })
             .join("");
-          return `<td class="cell busy">${lines}</td>`;
+          return `<td class="cell busy" data-day="星期${d}">${lines}</td>`;
         })
         .join("");
       return `<tr>
