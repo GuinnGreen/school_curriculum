@@ -499,6 +499,7 @@
     background: var(--accent-2);
     color: #fff;
   }
+  .schedule .partner .short { display: none; }
 
   /* Subject color tints (Morandi) */
   .sub-0 { background: #E8DED1 !important; }
@@ -525,104 +526,83 @@
     header h1 { font-size: 18px; }
     main {
       grid-template-columns: 1fr;
-      padding: 0 12px 24px;
+      padding: 0 10px 24px;
       gap: 12px;
     }
     aside {
       position: static;
       height: auto;
-      max-height: 50vh;
+      max-height: 48vh;
       padding: 12px;
     }
-    section.viewer { padding: 16px; }
-    .viewer-header .title { font-size: 22px; }
+    section.viewer { padding: 12px; }
+    .viewer-header { gap: 10px; margin-bottom: 12px; }
+    .viewer-header .title { font-size: 20px; }
+    .viewer-header .subtitle { font-size: 12px; }
 
-    /* Schedule: turn the table into a vertical list grouped per period.
-       Each period becomes a card; days inside the card stack as rows. */
-    .schedule { border-spacing: 0; }
-    .schedule thead { display: none; }
-    .schedule, .schedule tbody, .schedule tr {
-      display: block;
+    /* Schedule keeps the desktop grid layout, just very compact. */
+    .schedule {
+      border-spacing: 3px;
+      table-layout: fixed;
       width: 100%;
     }
-    .schedule tr {
-      background: var(--surface-2);
-      border-radius: var(--radius-sm);
-      padding: 12px 12px 8px;
-      margin-bottom: 12px;
-    }
-    .schedule td {
-      display: block;
-      width: 100% !important;
-      height: auto !important;
-      padding: 0;
-      background: transparent !important;
-      text-align: left;
+    .schedule th {
+      padding: 6px 0;
+      font-size: 12px;
     }
     .schedule td.period {
-      color: var(--accent-3);
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
-      padding: 0;
+      width: 30px !important;
+      padding: 6px 2px;
+      font-size: 11px;
+      letter-spacing: 0;
     }
-    .schedule td.period .time {
-      display: inline;
+    .schedule td.period .time { display: none; }
+    .schedule td.cell {
+      height: 56px;
+      padding: 4px 3px;
+      font-size: 11px;
+    }
+    .schedule .subject {
       font-size: 12px;
-      font-weight: 400;
-      margin: 0 0 0 8px;
-      opacity: 0.85;
+      margin-bottom: 2px;
+      line-height: 1.15;
     }
-    .schedule td.cell { display: none; }
-    .schedule td.cell.has-content,
-    .schedule td.cell.free,
+    .schedule .subject .cat {
+      font-size: 9px;
+      margin-top: 1px;
+    }
+    .schedule .partner {
+      font-size: 10px;
+      padding: 1px 5px;
+    }
+    .schedule .partner .long { display: none; }
+    .schedule .partner .short { display: inline; }
+    /* Compare-mode busy cells: show only teacher names, drop subject·class */
     .schedule td.cell.busy {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      border-radius: var(--radius-sm);
-      padding: 10px 12px;
-      margin-bottom: 6px;
-      min-height: 0;
-      font-size: 14px;
+      font-size: 9.5px;
+      line-height: 1.25;
+      padding: 4px 4px;
+      text-align: center;
     }
-    .schedule td.cell.has-content { background: var(--surface) !important; }
-    .schedule td.cell::before {
-      content: attr(data-day);
-      flex-shrink: 0;
-      width: 48px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--ink-soft);
+    .schedule td.cell.busy .who { font-weight: 600; }
+    .schedule td.cell.busy .what { display: none; }
+    .schedule td.cell.free .free-mark {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--accent);
     }
-    .schedule td.cell.has-content .subject {
-      flex: 1;
-      margin-bottom: 0;
-      font-size: 15px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    /* Replace "✓ 全員空堂" text with just the checkmark on mobile */
+    .schedule td.cell.free .free-mark { font-size: 0; }
+    .schedule td.cell.free .free-mark::before {
+      content: "✓";
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--accent);
     }
-    .schedule td.cell.has-content .subject .cat {
-      display: inline;
-      margin: 0;
-      padding-left: 6px;
-      border-left: 1px solid var(--line);
-    }
-    .schedule td.cell.has-content .partner {
-      margin-left: auto;
-      flex-shrink: 0;
-    }
-    .schedule td.cell.free .free-mark { font-size: 13px; }
-    .schedule td.cell.busy {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    .schedule td.cell.busy::before { width: auto; }
 
-    /* Compare summary: stat block above chips on mobile */
-    .compare-summary { flex-direction: column; align-items: stretch; gap: 12px; }
+    /* Compare summary: stack vertically on mobile */
+    .compare-summary { flex-direction: column; align-items: stretch; gap: 10px; padding: 10px; }
+    .compare-summary .picks { gap: 6px; }
     .compare-summary .stat {
       flex-direction: row;
       gap: 10px;
@@ -815,7 +795,9 @@ function renderViewer() {
       partnerKey: "class",
       partnerLabel: (cid) => {
         const cls = findClass(cid);
-        return cls ? cls.name : cid;
+        if (!cls) return cid;
+        // Long form on desktop, short id on mobile (toggle via CSS).
+        return `<span class="long">${cls.name}</span><span class="short">${cls.id}</span>`;
       },
     });
   } else {
