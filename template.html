@@ -139,6 +139,7 @@
     line-height: 1.5;
     vertical-align: middle;
   }
+  .tab-badge[hidden] { display: none; }
   .tab.active .tab-badge { background: rgba(255,255,255,0.4); }
   .list-item .check {
     width: 18px;
@@ -971,11 +972,18 @@ function renderAll() {
   document.querySelectorAll(".tab").forEach((t) => {
     t.classList.toggle("active", t.dataset.mode === state.mode);
   });
+  // Strip any stale ids that no longer match a real teacher (e.g. from a hash
+  // saved before the PDF was updated).
+  const validIds = [...state.compareIds].filter((id) => findTeacher(id));
+  if (validIds.length !== state.compareIds.size) {
+    state.compareIds = new Set(validIds);
+  }
   const badge = document.getElementById("compareBadge");
   if (state.compareIds.size > 0) {
     badge.textContent = state.compareIds.size;
     badge.hidden = false;
   } else {
+    badge.textContent = "";
     badge.hidden = true;
   }
   renderList();
