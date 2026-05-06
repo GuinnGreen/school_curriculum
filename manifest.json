@@ -1,0 +1,18 @@
+{
+  "name": "億載國小 114-1 課表",
+  "short_name": "課表",
+  "description": "億載國小教師與班級課表查詢，支援空堂比對。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#EDE6DA",
+  "theme_color": "#B5C4B1",
+  "lang": "zh-Hant",
+  "dir": "ltr",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

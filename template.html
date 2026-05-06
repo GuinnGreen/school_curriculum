@@ -2,8 +2,15 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>億載國小 114-1 課表</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#B5C4B1">
+<meta name="description" content="億載國小教師與班級課表查詢，支援空堂比對。">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="課表">
 <style>
   :root {
     --bg: #EDE6DA;
@@ -1108,6 +1115,14 @@ window.addEventListener("hashchange", () => {
 
 readHash();
 renderAll();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch((err) => {
+      console.warn('SW registration failed:', err);
+    });
+  });
+}
 </script>
 </body>
 </html>
