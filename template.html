@@ -558,8 +558,11 @@
       padding: 6px 0;
       font-size: 12px;
     }
+    /* Override the inline width:88px on the period <th> so the day columns
+       can share the extra space evenly (table-layout: fixed). */
+    .schedule th:first-child { width: 44px !important; }
     .schedule td.period {
-      width: 30px !important;
+      width: 44px !important;
       padding: 6px 2px;
       font-size: 11px;
       letter-spacing: 0;
