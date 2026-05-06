@@ -592,10 +592,17 @@
     .schedule td.cell.busy {
       font-size: 9.5px;
       line-height: 1.25;
-      padding: 4px 4px;
+      padding: 4px 3px;
       text-align: center;
+      /* Keep Chinese names together; one name per line, don't break per char. */
+      word-break: keep-all;
+      overflow-wrap: normal;
     }
-    .schedule td.cell.busy .who { font-weight: 600; }
+    .schedule td.cell.busy .who {
+      font-weight: 600;
+      display: block;
+      white-space: nowrap;
+    }
     .schedule td.cell.busy .what { display: none; }
     .schedule td.cell.free .free-mark {
       font-size: 22px;
