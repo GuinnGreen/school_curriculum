@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Parse 114班級課表.pdf + 114教師課表.pdf into a single static HTML site.
+"""Parse 115班級課表.pdf + 115教師課表.pdf into a single static HTML site.
 
 Both PDFs share the same page layout: a vertical title on the left, a 6×8 grid
 (weekday × period). Each cell may contain 1 subject (e.g. 國語) or a compound
@@ -17,8 +17,8 @@ from pathlib import Path
 import fitz
 
 ROOT = Path(__file__).resolve().parent
-TEACHER_PDF = ROOT / "114教師課表.pdf"
-CLASS_PDF = ROOT / "114班級課表.pdf"
+TEACHER_PDF = ROOT / "115教師課表.pdf"
+CLASS_PDF = ROOT / "115班級課表.pdf"
 TEMPLATE = ROOT / "template.html"
 OUT_HTML = ROOT / "index.html"
 OUT_JSON = ROOT / "data.json"
@@ -35,13 +35,35 @@ SUBJECT_MAX_DY = 50  # subject chars sit in top ~50pt of a cell
 # three of these in a 2D grid; we don't trust the visual order but reconstruct
 # from a multiset of chars using longest-match-first tokenization.
 SUBJECT_VOCAB = [
+    "多采多億(閱讀)", "多采多億(作文)", "多采多億(作閱)",
+    "億起創E(電腦)", "多采多億英文", "彈性課程社團",
+    "多采多億", "自然科學", "表演藝術", "藝術音樂", "視覺藝術",
+    "本土語文", "綜合活動",
     "校訂英語", "校訂議題",                      # 4-char first
     "本土語",                                    # 3-char
-    "國語", "數學", "生活", "英語", "自然", "社會", "綜合",
+    "國語", "數學", "生活", "英語", "英文", "自然", "社會", "綜合",
     "體育", "健康", "健體", "美勞", "音樂", "表藝", "藝文",
     "閱讀", "作文", "社團", "電腦", "彈性",
 ]
 CATEGORY_TOKENS = {"健體", "藝文", "生活", "彈性"}
+
+# 115-1 uses longer curriculum names in the source PDFs.  The site deliberately
+# shows the short names used by staff; standalone 多采多億 keeps its source name.
+SUBJECT_DISPLAY_NAMES = {
+    "多采多億英文": "英語",
+    "英文": "英語",
+    "多采多億(閱讀)": "閱讀",
+    "多采多億(作文)": "作文",
+    "多采多億(作閱)": "作閱",
+    "自然科學": "自然",
+    "表演藝術": "表藝",
+    "億起創E(電腦)": "電腦",
+    "本土語文": "本土語",
+    "藝術音樂": "音樂",
+    "視覺藝術": "美勞",
+    "綜合活動": "綜合",
+    "彈性課程社團": "社團",
+}
 
 GRADE_NAMES = {"一": "一年級", "二": "二年級", "三": "三年級",
                "四": "四年級", "五": "五年級", "六": "六年級"}
@@ -124,7 +146,7 @@ def parse_subject(cell_words, cell_top: float, warn_ctx: str = "") -> tuple[str,
     if "校訂議題" in subjects and len(subjects) > 1:
         subjects.remove("校訂議題")
         cats.insert(0, "校訂議題")
-    ordered = subjects + cats
+    ordered = [SUBJECT_DISPLAY_NAMES.get(t, t) for t in subjects + cats]
     return "／".join(ordered), ordered
 
 
@@ -137,7 +159,7 @@ def parse_class_designator(cell_words, cell_top: float) -> str:
     text = "".join(w[4] for w in rel).translate(FW_DIGITS)
     text = re.sub(r"\s+", "", text)
     m = re.match(r"^([一二三四五六])(\d{1,2})$", text)
-    return m.group(1) + m.group(2) if m else text
+    return m.group(1) + str(int(m.group(2))) if m else text
 
 
 def parse_teacher_name(cell_words, cell_top: float) -> str:
@@ -206,8 +228,14 @@ def parse_class_page(page) -> dict | None:
     if not title:
         return None
     m = re.match(r"^([一二三四五六])年(\d{1,2})班$", title)
-    cid = (m.group(1) + m.group(2)) if m else title
-    return {"id": cid, "name": title, "schedule": parse_grid(words, "class")}
+    if m:
+        class_number = str(int(m.group(2)))
+        cid = m.group(1) + class_number
+        name = f"{m.group(1)}年{class_number}班"
+    else:
+        cid = title
+        name = title
+    return {"id": cid, "name": name, "schedule": parse_grid(words, "class")}
 
 
 def categorize_teacher(teacher: dict) -> tuple[str, str]:
