@@ -88,6 +88,20 @@ class ClassNumberTests(unittest.TestCase):
         self.assertEqual(record["name"], "二年1班")
 
 
+class TeacherNameTests(unittest.TestCase):
+    def test_broken_pdf_text_names_are_corrected_from_the_staff_roster(self):
+        cases = {
+            "辜?晶": "韋銹晶",
+            "徐?慈": "徐彣慈",
+            "葉?": "葉珉",
+            "郭郁芳": "郭郁芳",
+        }
+
+        for source, expected in cases.items():
+            with self.subTest(source=source):
+                self.assertEqual(build.normalize_teacher_name(source), expected)
+
+
 @unittest.skipUnless(hasattr(build.fitz, "open"), "PyMuPDF is required")
 class PdfBuildIntegrationTests(unittest.TestCase):
     def test_115_pdfs_build_a_consistent_new_semester_site(self):
@@ -123,6 +137,11 @@ class PdfBuildIntegrationTests(unittest.TestCase):
         self.assertEqual(teacher_claims, class_claims)
 
         self.assertTrue(all("年0" not in record["name"] for record in data["classes"]))
+        homerooms = {record["id"]: record["homeroom_teacher"] for record in data["classes"]}
+        self.assertEqual(homerooms["三2"], "韋銹晶")
+        self.assertEqual(homerooms["三6"], "徐彣慈")
+        self.assertEqual(homerooms["五12"], "葉珉")
+        self.assertTrue(all("?" not in teacher["name"] for teacher in data["teachers"]))
         forbidden_long_names = {
             "多采多億英文",
             "多采多億(閱讀)",

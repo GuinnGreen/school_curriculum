@@ -1,6 +1,6 @@
 // Bump CACHE_VERSION whenever index.html / manifest / icons change so old
 // installs flush their cache.
-const CACHE_VERSION = 'class-tired-v4';
+const CACHE_VERSION = 'class-tired-v5';
 const ASSETS = [
   './',
   './index.html',

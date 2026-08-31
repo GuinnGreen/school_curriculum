@@ -71,6 +71,14 @@ GRADE_NAMES = {"一": "一年級", "二": "二年級", "三": "三年級",
 # Used to merge close-relative subjects when classifying 科任 teachers.
 SUBJECT_NORMALIZE = {"校訂英語": "英語"}
 
+# The PDFs' embedded text layer cannot encode these uncommon name glyphs.
+# The 115 staff roster is the authoritative source for the corrections.
+TEACHER_NAME_CORRECTIONS = {
+    "辜?晶": "韋銹晶",
+    "徐?慈": "徐彣慈",
+    "葉?": "葉珉",
+}
+
 HOMEROOM_THRESHOLD = 0.7  # ≥70% slots in a single class → that class's 導師
 
 PERIOD_TIMES = {
@@ -168,7 +176,11 @@ def parse_teacher_name(cell_words, cell_top: float) -> str:
     if not rel:
         return ""
     rel.sort(key=lambda w: (w[1], w[0]))
-    return "".join(w[4] for w in rel).strip()
+    return normalize_teacher_name("".join(w[4] for w in rel).strip())
+
+
+def normalize_teacher_name(name: str) -> str:
+    return TEACHER_NAME_CORRECTIONS.get(name, name)
 
 
 def parse_grid(words, kind: str):
@@ -198,7 +210,7 @@ def parse_teacher_page(page) -> dict | None:
     title = extract_title(words)
     if not title:
         return None
-    name = title.replace("老師", "").strip()
+    name = normalize_teacher_name(title.replace("老師", "").strip())
     # 編號: NNN at the bottom
     tid = ""
     hours = 0
